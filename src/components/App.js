@@ -7,7 +7,6 @@ import ImagePopup from './ImagePopup';
 
 
 function App() {
-
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
@@ -37,8 +36,8 @@ function App() {
   }
   
   return (
-    <div className="page">
-      <Header className="header"/>
+    <div>
+      <Header />
       
       <Main className="content"
         onEditAvatar={handleEditAvatarClick}
@@ -47,7 +46,7 @@ function App() {
         onCardClick={handleCardClick}
       />
 
-      <Footer className="footer"/>
+      <Footer />
 
       <PopupWithForm
         isOpen={isEditAvatarPopupOpen}

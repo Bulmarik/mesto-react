@@ -3,7 +3,6 @@ import api from '../utils/api';
 import Card from './Card';
 
 function Main(props) {
-
   const [userName, setUserName] = React.useState("");
   const [userDescription, setUserDescription] = React.useState("");
   const [userAvatar, setUserAvatar] = React.useState("");
