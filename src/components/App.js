@@ -34,7 +34,7 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setSelectedCard(false);
   }
-  
+
   return (
     <div>
       <Header />
@@ -48,53 +48,45 @@ function App() {
 
       <Footer />
 
+      {/* Аватарка */}
       <PopupWithForm
         isOpen={isEditAvatarPopupOpen}
         onClose={closeAllPopups}
         name='edit-avatar'
-        title='Обновить аватар'
-        children={(
-          <>
-            <input className="popup__input popup__input_type_avatar-url" name="ava-url" placeholder="Ссылка на аватар" type="url" required />
-            <span className="popup__error" id="ava-url-error"></span>
-          </>
-        )}
-      />
+        title='Обновить аватар'>
+          <input className="popup__input popup__input_type_avatar-url" name="ava-url" placeholder="Ссылка на аватар" type="url" required />
+          <span className="popup__error" id="ava-url-error" />
+      </PopupWithForm>
 
+      {/* Юзер */}
       <PopupWithForm
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
         name='edit-profile'
-        title='Редактировать профиль'
-        children={(
-          <>
-            <input className="popup__input popup__input_type_name" name="name" type="text" placeholder="Имя" required />
-            <span className="popup__error" id="name-error"></span>
-            <input className="popup__input popup__input_type_description" name="description" type="text" placeholder="О себе" required />
-            <span className="popup__error" id="description-error"></span>
-          </>
-        )}
-      />
+        title='Редактировать профиль'>
+          <input className="popup__input popup__input_type_name" name="name" type="text" placeholder="Имя" required />
+          <span className="popup__error" id="name-error" />
+          <input className="popup__input popup__input_type_description" name="description" type="text" placeholder="О себе" required />
+          <span className="popup__error" id="description-error" />
+        </PopupWithForm>
 
+      {/* Дабавление карточек */}
       <PopupWithForm
         isOpen={isAddPlacePopupOpen}
         onClose={closeAllPopups}
         name='add-card'
-        title='Новое место'
-        children={(
-          <>
-            <input className="popup__input popup__input_type_place" name="place" placeholder="Название" type="text" required />
-            <span className="popup__error" id="place-error"></span>
-            <input className="popup__input popup__input_type_url" name="card-url" placeholder="Ссылка на картинку" type="url" required />
-            <span className="popup__error" id="card-url-error"></span>
-          </>
-        )}
-      />
+        title='Новое место'>
+          <input className="popup__input popup__input_type_place" name="place" placeholder="Название" type="text" required />
+          <span className="popup__error" id="place-error" />
+          <input className="popup__input popup__input_type_url" name="card-url" placeholder="Ссылка на картинку" type="url" required />
+          <span className="popup__error" id="card-url-error" />
+      </PopupWithForm>
 
+      {/* Удаление карточек */}
       <div className="popup popup_type_delete">
-        <div className="popup__overlay"></div>
+        <div className="popup__overlay" />
         <div className="popup__container">
-          <button className="popup__close-btn" type="button"></button>
+          <button className="popup__close-btn" type="button" />
           <form className="popup__form" id="delete-form" name="popup-form" action="#" method="post">
             <h3 className="popup__title">Вы уверены?</h3>
             <button className="popup__submit-btn" type="submit">Да</button>
@@ -102,6 +94,7 @@ function App() {
         </div>
       </div>
 
+      {/* Просмотрт картинок */}
       <ImagePopup
         card={selectedCard}
         onClose={closeAllPopups}
