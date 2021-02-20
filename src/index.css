@@ -17,6 +17,7 @@
 @import url(./blocks/elements/__items/elements__items.css);
 @import url(./blocks/elements/__item/elements__item.css);
 @import url(./blocks/elements/__del-btn/elements__del-btn.css);
+@import url(./blocks/elements/__del-btn/__del-btn_hidden/elements__del-btn_hidden.css);
 @import url(./blocks/elements/__image/elements__image.css);
 @import url(./blocks/elements/__description/elements__description.css);
 @import url(./blocks/elements/__name/elements__name.css);

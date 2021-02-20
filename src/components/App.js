@@ -6,6 +6,7 @@ import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
 import api from '../utils/api';
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
+import EditProfilePopup from './EditProfilePopup';
 
 
 function App() {
@@ -26,8 +27,8 @@ function App() {
     })
     .catch((res) => {
       console.log(`Ошибка: ${res.status}`);
-    })
-  })
+    }) 
+  }, [])
 
   
 
@@ -55,6 +56,21 @@ function App() {
     setSelectedCard(false);
   }
 
+
+  function handleUpdateUser(data) {
+    api.setUser(data.name, data.about)
+      .then((res) => {
+        setCurrentUser(res);
+        closeAllPopups();
+      })
+      .catch((res) => {
+        console.log(`Ошибка: ${res.status}`);
+      })
+  }
+
+
+
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div>
@@ -79,8 +95,11 @@ function App() {
             <span className="popup__error" id="ava-url-error" />
         </PopupWithForm>
       
+      
         {/* Юзер */}
-        <PopupWithForm
+        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
+
+        {/* <PopupWithForm
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
           name='edit-profile'
@@ -89,8 +108,9 @@ function App() {
             <span className="popup__error" id="name-error" />
             <input className="popup__input popup__input_type_description" name="description" type="text" placeholder="О себе" required />
             <span className="popup__error" id="description-error" />
-          </PopupWithForm>
+        </PopupWithForm> */}
       
+
         {/* Дабавление карточек */}
         <PopupWithForm
           isOpen={isAddPlacePopupOpen}
