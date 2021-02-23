@@ -1,54 +1,44 @@
 import React from 'react';
-import api from '../utils/api';
+// import api from '../utils/api';
 import Card from './Card';
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
 
 function Main(props) {
-  // const [userName, setUserName] = React.useState("");
-  // const [userDescription, setUserDescription] = React.useState("");
-  // const [userAvatar, setUserAvatar] = React.useState("");
-  const [cards, setCards] = React.useState([]);
   const currentUser = React.useContext(CurrentUserContext);
+  // const [cards, setCards] = React.useState([]);
 
-  function handleCardLike(card) {
-    const isLiked = card.likes.some(like => like._id === currentUser._id);
-    api.changeLikeCardStatus(card._id, !isLiked)
-      .then((newCard) => {
-        const newCards = cards.map((c) => c._id === card._id ? newCard : c);
-        setCards(newCards)
-      })
-      .catch((res) => {
-        console.log(`Ошибка: ${res.status}`);
-      })
-  }
+  // function handleCardLike(card) {
+  //   const isLiked = card.likes.some(like => like._id === currentUser._id);
+  //   api.changeLikeCardStatus(card._id, !isLiked)
+  //     .then((newCard) => {
+  //       const newCards = cards.map((c) => c._id === card._id ? newCard : c);
+  //       setCards(newCards)
+  //     })
+  //     .catch((res) => {
+  //       console.log(`Ошибка: ${res.status}`);
+  //     })
+  // }
 
-  function handleCardDelete(card) {
-    api.delCard(card._id)
-      .then(() => {
-        const newList = cards.filter((c) => c._id !== card._id);
-        setCards(newList);
-      })
-      .catch((res) => {
-        console.log(`Ошибка: ${res.status}`);
-      })
-  }
+  // function handleCardDelete(card) {
+  //   api.delCard(card._id)
+  //     .then(() => {
+  //       const newList = cards.filter((c) => c._id !== card._id);
+  //       setCards(newList);
+  //     })
+  //     .catch((res) => {
+  //       console.log(`Ошибка: ${res.status}`);
+  //     })
+  // }
 
-  React.useEffect(() => {
-    // Promise.all([api.getUser(), api.getInitialCards()])
-    api.getInitialCards()
-    .then((initialCards) => {
-      // .then(([user, initialCards]) => {
-        // setUserName(user.name)
-        // setUserDescription(user.about)
-        // setUserAvatar(user.avatar)
-        setCards(initialCards)
-      })
-      .catch((res) => {
-        console.log(`Ошибка: ${res.status}`);
-      })
-  }, [])
-
-  // console.log('hi!');
+  // React.useEffect(() => {
+  //   api.getInitialCards()
+  //   .then((initialCards) => {
+  //       setCards(initialCards)
+  //     })
+  //     .catch((res) => {
+  //       console.log(`Ошибка: ${res.status}`);
+  //     })
+  // }, [])
 
   return (
     <>
@@ -67,9 +57,9 @@ function Main(props) {
       </section>
       <section className="elements">
         <ul className="elements__items">
-          {cards.map((data) => {
+          {props.cards.map((data) => {
             return (
-              <Card card={data} key={data._id} onCardClick={props.onCardClick} onCardLike={handleCardLike} onCardDelete={handleCardDelete} />
+              <Card card={data} key={data._id} onCardClick={props.onCardClick} onCardLike={props.onCardLike} onCardDelete={props.onCardDelete} />
             )
           })}
         </ul>

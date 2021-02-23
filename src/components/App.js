@@ -2,11 +2,13 @@ import React from 'react';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
-import PopupWithForm from './PopupWithForm';
+// import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
 import api from '../utils/api';
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
 import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
 
 
 function App() {
@@ -14,12 +16,13 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState(false);
-
-
-
-
+  const [cards, setCards] = React.useState([]);
+  
+  
+  
+  
   const [currentUser, setCurrentUser] = React.useState("");
-
+  
   React.useEffect(() => {
     api.getUser()
     .then((res) => {
@@ -29,7 +32,16 @@ function App() {
       console.log(`Ошибка: ${res.status}`);
     }) 
   }, [])
-
+  
+  React.useEffect(() => {
+    api.getInitialCards()
+    .then((initialCards) => {
+        setCards(initialCards)
+      })
+      .catch((res) => {
+        console.log(`Ошибка: ${res.status}`);
+      })
+  }, [])
   
 
   
@@ -68,6 +80,57 @@ function App() {
       })
   }
 
+  function handleUpdateAvatar(data) {
+    api.setAvatar(data)
+      .then ((res) => {
+        setCurrentUser(res);
+        closeAllPopups();
+      })
+      .catch((res) => {
+        console.log(`Ошибка: ${res.status}`);
+      })
+  }
+
+
+
+
+
+  function handleCardLike(card) {
+    const isLiked = card.likes.some(like => like._id === currentUser._id);
+    api.changeLikeCardStatus(card._id, !isLiked)
+      .then((newCard) => {
+        const newCards = cards.map((c) => c._id === card._id ? newCard : c);
+        setCards(newCards)
+      })
+      .catch((res) => {
+        console.log(`Ошибка: ${res.status}`);
+      })
+  }
+
+  function handleCardDelete(card) {
+    api.delCard(card._id)
+      .then(() => {
+        const newList = cards.filter((c) => c._id !== card._id);
+        setCards(newList);
+      })
+      .catch((res) => {
+        console.log(`Ошибка: ${res.status}`);
+      })
+  }
+
+  function handleAddPlaceSubmit(data) {
+    api.addNewCard(data)
+      .then((res) => {
+        setCards([res, ...cards]);
+        closeAllPopups();
+      })
+      .catch((res) => {
+        console.log(`Ошибка: ${res.status}`);
+      })
+  }
+
+
+
 
 
 
@@ -81,19 +144,24 @@ function App() {
           onEditProfile={handleEditProfileClick}
           onAddPlace={handleAddPlaceClick}
           onCardClick={handleCardClick}
+          cards={cards}
+          onCardLike={handleCardLike}
+          onCardDelete={handleCardDelete}
         />
       
         <Footer />
       
         {/* Аватарка */}
-        <PopupWithForm
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
+
+        {/* <PopupWithForm
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
           name='edit-avatar'
           title='Обновить аватар'>
             <input className="popup__input popup__input_type_avatar-url" name="ava-url" placeholder="Ссылка на аватар" type="url" required />
             <span className="popup__error" id="ava-url-error" />
-        </PopupWithForm>
+        </PopupWithForm> */}
       
       
         {/* Юзер */}
@@ -110,9 +178,10 @@ function App() {
             <span className="popup__error" id="description-error" />
         </PopupWithForm> */}
       
+        {/* Добавление карточек */}
+        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit}/>
 
-        {/* Дабавление карточек */}
-        <PopupWithForm
+        {/* <PopupWithForm
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
           name='add-card'
@@ -121,7 +190,7 @@ function App() {
             <span className="popup__error" id="place-error" />
             <input className="popup__input popup__input_type_url" name="card-url" placeholder="Ссылка на картинку" type="url" required />
             <span className="popup__error" id="card-url-error" />
-        </PopupWithForm>
+        </PopupWithForm> */}
       
         {/* Удаление карточек */}
         <div className="popup popup_type_delete">
