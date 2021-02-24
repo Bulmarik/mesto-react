@@ -2,8 +2,7 @@ import React from 'react';
 import PopupWithForm from './PopupWithForm';
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
 
-
-function EditProfilePopup(props) {
+export default function EditProfilePopup(props) {
   const currentUser = React.useContext(CurrentUserContext);
   const [name, setName] = React.useState('');
   const [description, setDescription] = React.useState('');
@@ -29,20 +28,18 @@ function EditProfilePopup(props) {
     });
   }
 
-
   return (
     <PopupWithForm
       isOpen={props.isOpen}
       onClose={props.onClose}
       onSubmit={handleSubmit}
       name='edit-profile'
-      title='Редактировать профиль'>
-        <input className="popup__input popup__input_type_name" value={name} onChange={inputName} name="name" type="text" placeholder="Имя" required />
+      title='Редактировать профиль'
+      button='Сохранить'>
+        <input className="popup__input popup__input_type_name" value={name} onChange={inputName} name="name" maxLength="40" minLength="2" type="text" placeholder="Имя" required />
         <span className="popup__error" id="name-error" />
-        <input className="popup__input popup__input_type_description" value={description} onChange={inputDescription} name="description" type="text" placeholder="О себе" required />
+        <input className="popup__input popup__input_type_description" value={description} onChange={inputDescription} name="description" maxLength="200" minLength="2" type="text" placeholder="О себе" required />
         <span className="popup__error" id="description-error" />
     </PopupWithForm>
   )
 }
-
-export default EditProfilePopup;
