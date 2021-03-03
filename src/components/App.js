@@ -1,4 +1,5 @@
 import React from 'react';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -7,38 +8,71 @@ import EditProfilePopup from './EditProfilePopup';
 import AddPlacePopup from './AddPlacePopup';
 import RemovePlacePopup from './RemovePlacePopup';
 import ImagePopup from './ImagePopup';
+import Login from './Login';
+import Register from './Register';
+import ProtectedRoute from './ProtectedRoute';
+import InfoTooltip from './InfoTooltip';
 import api from '../utils/api';
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
+import * as auth from '../utils/auth';
 
 export default function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isRemovePlacePopupOpen, setIsRemovePlacePopupOpen] = React.useState(false);  
+  const [isRemovePlacePopupOpen, setIsRemovePlacePopupOpen] = React.useState(false);
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState(false);
   const [cards, setCards] = React.useState([]);
   const [currentUser, setCurrentUser] = React.useState("");
+
+  const [loggedIn, setLoggedIn] = React.useState(false)
+  const [email, setEmail] = React.useState("");
+  const history = useHistory();
+  const [infoTool, setInfoTool] = React.useState({message: '', icon: ''});
   
   React.useEffect(() => {
-    api.getUser()
-    .then((res) => {
-      setCurrentUser(res);
-    })
-    .catch((res) => {
-      console.log(`Ошибка: ${res.status}`);
-    }) 
-  }, [])
+    if(loggedIn) {
+      api.getUser()
+        .then((res) => {
+          setCurrentUser(res);
+        })
+        .catch((res) => {
+          console.log(`Ошибка: ${res.status}`);
+        })
+    }
+  }, [loggedIn])
   
   React.useEffect(() => {
-    api.getInitialCards()
-      .then((initialCards) => {
-        setCards(initialCards)
-      })
-      .catch((res) => {
-        console.log(`Ошибка: ${res.status}`);
-      })
-  }, [])
-    
+    if(loggedIn) {
+      api.getInitialCards()
+        .then((initialCards) => {
+          setCards(initialCards)
+        })
+        .catch((res) => {
+          console.log(`Ошибка: ${res.status}`);
+        })
+    }
+  }, [loggedIn])
+  
+
+  React.useEffect(() => {
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      auth.getContent(jwt)
+        .then((res) => {
+          if (res) {
+            setLoggedIn(true);
+            history.push("/mesto");
+            setEmail(res.data.email);
+          }
+        })
+        .catch((res) => {
+          console.log(`Ошибка: ${res.status}`);
+        })
+    }
+  }, [history])
+
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
   }
@@ -65,6 +99,7 @@ export default function App() {
     setIsAddPlacePopupOpen(false);
     setSelectedCard(false);
     setIsRemovePlacePopupOpen(false);
+    setIsInfoTooltipOpen(false);
   }
   
   function handleUpdateAvatar(data) {
@@ -123,27 +158,58 @@ export default function App() {
         console.log(`Ошибка: ${res.status}`);
       })
   }
-    
+
+  function handleLogin() {
+    setLoggedIn(true);
+  }
+
+  function handleInfoTooltip(data) {
+    setIsInfoTooltipOpen(true);
+    setInfoTool(data);
+  }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div>
-        <Header />
-        <Main className="content"
-          onEditAvatar={handleEditAvatarClick}
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}
-          onCardClick={handleCardClick}
-          cards={cards}
-          onCardLike={handleCardLike}
-          onCardDelete={handleRemovePlaceClick}
+        <Header
+          email={email}
         />
-        <Footer />
+
+        <Switch>
+          <ProtectedRoute 
+            path="/mesto"
+            loggedIn={loggedIn}
+            component={Main}
+              className="content"
+              onEditAvatar={handleEditAvatarClick}
+              onEditProfile={handleEditProfileClick}
+              onAddPlace={handleAddPlaceClick}
+              onCardClick={handleCardClick}
+              cards={cards}
+              onCardLike={handleCardLike}
+              onCardDelete={handleRemovePlaceClick}
+          />
+            
+          <Route path="/sign-in">
+            <Login onLogin={handleLogin} />
+          </Route>
+
+          <Route path="/sign-up">
+            <Register onInfoTooltip={handleInfoTooltip}/>
+          </Route>
+
+          <Route>
+            {loggedIn ? (<Redirect to="/mesto" />) : (<Redirect to="sign-in" />)}
+          </Route>
+        </Switch>
       
+        <Footer />
+
         {/* Аватарка */}
         <EditAvatarPopup
-        isOpen={isEditAvatarPopupOpen}
-        onClose={closeAllPopups}
-        onUpdateAvatar={handleUpdateAvatar}
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar}
         />
       
         {/* Юзер */}
@@ -171,6 +237,13 @@ export default function App() {
         <ImagePopup
           card={selectedCard}
           onClose={closeAllPopups}
+        />
+
+        {/* Инфо о регистрации */}
+        <InfoTooltip
+          isOpen={isInfoTooltipOpen}
+          onClose={closeAllPopups}
+          infoTool={infoTool}
         />
       </div>
     </CurrentUserContext.Provider>

@@ -7,7 +7,7 @@
     border-radius: 2px;
     border: none;
     padding: 0;
-    margin-top: 13px;
+    margin: 13px 0 25px;
     transition: opacity 0.3s ease-in-out;
 }
 
@@ -20,6 +20,6 @@
     .popup__submit-btn {
     min-height: 40px;
     font-size: 14px;
-    margin-top: 11px;
+    margin: 11px 0 20px;
     }
 }
